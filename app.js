@@ -1,3 +1,4 @@
+
 const express = require('express'),
     bodyParser = require('body-parser'),
     request = require('request'),
@@ -5,8 +6,8 @@ const express = require('express'),
     token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 
 app.set('port', (process.env.PORT || 3000));
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 
 app.get('/', (req, res)=>{
@@ -23,7 +24,7 @@ app.get('/webhook', (req, res)=>{
 
 app.post('/webhook', (req, res)=>{
     console.log(req.body);
-    if(req.body.object === 'page'){
+    // if(req.body.object === 'page'){
         req.body.entry.forEach((entry)=>{
             entry.messaging.forEach((event)=>{
                 if(event.message && event.message.text){
@@ -32,7 +33,7 @@ app.post('/webhook', (req, res)=>{
             });
         });
         res.status(200).end();
-    }
+    // }
 });
 
 const server = app.listen(app.get('port'), ()=>{
