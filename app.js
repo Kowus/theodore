@@ -7,6 +7,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 
+app.get('/', (req, res)=>{
+
+        res.status(200).send("Hello World");
+});
+
 app.get('/webhook', (req, res)=>{
     if(req.query['hub.mode']&& req.query['hub.verify_token'] === process.env.FACEBOOK_WEBHOOK_VERIFY_TOKEN){
         res.status(200).send(req.query['hub.challenge']);
