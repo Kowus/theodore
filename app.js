@@ -24,7 +24,8 @@ app.post('/webhook', (req, res)=>{
                     sendMessage(event);
                 }
             });
-        })
+        });
+        res.status(200).end();
     }
 });
 
