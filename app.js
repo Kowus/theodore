@@ -37,6 +37,7 @@ app.post('/ai', (req, res)=>{
     console.log(req.body);
    if(req.body.result.action === 'topic'){
        let topic = req.body.result.parameters['topic'];
+       console.log(`TOPIC: ${topic}`);
        let restUrl = `https://api.github.com/search/repositories?q=${topic}+topic:${topic}&sort=updated`;
        /*request.get(restUrl, (err, response, body)=>{
            if(!err && response.statusCode ==200){
