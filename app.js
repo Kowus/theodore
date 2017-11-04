@@ -33,6 +33,32 @@ app.post('/webhook', (req, res) => {
     res.status(200).end();
 });
 
+app.post('/ai', (req, res)=>{
+   if(req.body.result.action === 'topic'){
+       let topic = req.body.result.parameters['topic'];
+       let restUrl = `https://api.github.com/search/repositories?q=${topic}+topic:${topic}&sort=updated`;
+       request.get(restUrl, (err, response, body)=>{
+           if(!err && response.statusCode ==200){
+               let json = body;
+               let msg = `there are ${body.total_count} projects on ${topic}`;
+               return res.json({
+                   speech:msg,
+                   displayText: msg,
+                   source: 'github'
+               });
+           }else{
+               return res.status(400).json({
+                   status: {
+                       code: 400,
+                       errorType: `I couldn't find ${topic} projects`
+                   }
+               })
+           }
+       })
+   }
+});
+
+
 const server = app.listen(app.get('port'), () => {
     console.log('Now my watch has began Lord %d of House %s', server.address().port, app.settings.env);
 });
