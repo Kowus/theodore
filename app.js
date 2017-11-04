@@ -20,7 +20,9 @@ app.post('/webhook', (req, res)=>{
     if(req.body.object === 'page'){
         req.body.entry.forEach((entry)=>{
             entry.messaging.forEach((event)=>{
-//sendMessage
+                if(event.message && event.message.text){
+                    sendMessage(event);
+                }
             });
         })
     }
