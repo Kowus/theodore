@@ -28,3 +28,4 @@ typings/
 *.tgz
 .yarn-integrity
 .env
+examples/
