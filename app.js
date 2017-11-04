@@ -68,6 +68,7 @@ app.post('/ai', (req, res)=>{
            if(!err && response.statusCode ==200){
                let json = body;
                let msg = `there are ${body.total_count} projects on ${topic}`;
+               console.log(msg);
                return res.json({
                    speech:msg,
                    displayText: msg,
