@@ -3,6 +3,7 @@ const express = require('express'),
     request = require('request'),
     app = express();
 
+app.set('port', (process.env.PORT || 3000));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -33,6 +34,11 @@ app.post('/webhook', (req, res)=>{
     }
 });
 
+const server = app.listen(app.get('port'), ()=>{
+   console.log('Now my watch has began Lord %d of House %s', server.address().port, app.settings.env);
+});
+
+
 function sendMessage(event) {
     let sender = event.sender.id;
     let text = event.message.text;
@@ -53,33 +59,3 @@ function sendMessage(event) {
         }
     })
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const server = app.listen(process.env.PORT || 3000, ()=>{
-   console.log('Now my watch has began Lord %d of House %s', server.address().port, app.settings.env);
-});
