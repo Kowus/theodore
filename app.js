@@ -1,7 +1,8 @@
 const express = require('express'),
     bodyParser = require('body-parser'),
     request = require('request'),
-    app = express();
+    app = express(),
+    token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 
 app.set('port', (process.env.PORT || 3000));
 app.use(bodyParser.json());
@@ -45,7 +46,7 @@ function sendMessage(event) {
 
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs:{access_token: process.env.FACEBOOK_PAGE_ACCESS_TOKEN},
+        qs:{access_token:token},
         method:'POST',
         json:{
             recipient:{id:sender},
