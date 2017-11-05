@@ -38,6 +38,10 @@ app.post('/webhook', (req, res) => {
             if (event.message && event.message.text) {
                 sendMessage(event);
             }
+            if(event.postback){
+                let text = JSON.stringify(event.postback)
+                sendTextMessage(sender, 'Postback received: '+text.substring(0,200, token));
+            }
         });
     });
     res.status(200).end();
@@ -138,6 +142,10 @@ function sendMessage(event) {
                                         type: "web_url",
                                         url: repo.clone_url,
                                         title: 'View Project'
+                                    },{
+                                        type:"postback",
+                                        title:"Stats",
+                                        payload:"Where is the addled cannibal?"
                                     }
                                 ]
                             })
@@ -184,12 +192,27 @@ function sendMessage(event) {
             });
         }
     });
-
     apiai.on('error', (error) => {
         console.log(error);
     });
-
     apiai.end();
+}
 
-
+function sendTextMessage(sender, text) {
+    let messageData = {text: text};
+    request({
+        url:'https://graph.facebook.com/v2.6/me/messages',
+        qs:{access_token: token},
+        method: 'POST',
+        json:{
+            recipient: {id:sender},
+            message: messageData
+        }
+    }, function (error, response, body) {
+        if(error){
+            console.log('Error sending messages: ', error)
+        } else if(response.body.error){
+            console.log('Error: ', response.body.error)
+        }
+    })
 }
