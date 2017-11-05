@@ -136,7 +136,7 @@ function sendMessage(event) {
                     }
                 });
         }
-            let messageData = {
+            /*let messageData = {
                 "attachment":{
                     "type":"template",
                     "payload":{
@@ -168,7 +168,7 @@ function sendMessage(event) {
                         ]
                     }
                 }
-            };
+            };*/
 
             /*request({
                 url: 'https://graph.facebook.com/v2.6/me/messages',
@@ -185,7 +185,7 @@ function sendMessage(event) {
                     console.log('Error: ', response.body.error)
                 }
             });*/
-        }
+
         else {
             let aiText = response.result.fulfillment.speech;
             request({
