@@ -98,7 +98,8 @@ app.post('/ai', (req, res) => {
                     return res.json({
                         speech: msg,
                         displayText: msg,
-                        source: 'github'
+                        source: 'github',
+                        messageData
                     });
                 }
             });
