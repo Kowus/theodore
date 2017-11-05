@@ -57,7 +57,7 @@ app.post('/ai', (req, res) => {
                 }
                 else {
                     let messageData = {
-                                "attachment": {
+                                // "attachment": {
                                     "type": "template",
                                     "payload": {
                                         "template_type": "generic",
@@ -87,7 +87,7 @@ app.post('/ai', (req, res) => {
                                             }
                                         ]
                                     }
-                                }
+                                // }
                     };
                     let msg = `there are ${response.data.total_count} projects on ${topic}`;
                     console.log(msg);
