@@ -47,7 +47,7 @@ app.post('/ai', (req, res) => {
     if (req.body.result.action === 'topic') {
         let topic = req.body.result.parameters['topic'];
         github.search.repos(
-            {q:`topic:${topic}`},(err, res)=>{
+            {q:`topic:${topic}`},(err, response)=>{
                 if (err){
                     return res.status(400).json({
                         status: {
@@ -57,7 +57,7 @@ app.post('/ai', (req, res) => {
                     })
                 }
                 else {
-                    let msg = `there are ${body.total_count} projects on ${topic}`;
+                    let msg = `there are ${response.total_count} projects on ${topic}`;
                     console.log(msg);
                     return res.json({
                         speech: msg,
