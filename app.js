@@ -90,11 +90,11 @@ function sendMessage(event) {
         sessionId: 'tabby_cat' // use any arbitrary id
     });
     let messageData = {
-            type: "template",
-            payload: {
-                template_type: "generic",
-                elements: []
-            }
+        type: "template",
+        payload: {
+            template_type: "generic",
+            elements: []
+        }
     };
 
     apiai.on('response', (response) => {
@@ -138,7 +138,10 @@ function sendMessage(event) {
                                     {
                                         type: "web_url",
                                         url: repo.clone_url,
-                                        title:'View Project'
+                                        title: 'View Project'
+                                    }, {
+                                        type: 'text'
+                                        title: repo.language
                                     }
                                 ]
                             })
