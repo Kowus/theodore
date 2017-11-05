@@ -87,7 +87,7 @@ function sendMessage(event) {
     let sender = event.sender.id;
     let text = event.message.text;
     let apiai = apiaiApp.textRequest(text, {
-        sessionId: 'tabby_cat' // use any arbitrary id
+        sessionId: 'tabby_cat'
     });
     let messageData = {
         type: "template",
@@ -98,7 +98,6 @@ function sendMessage(event) {
     };
 
     apiai.on('response', (response) => {
-        // Got a response from api.ai. Let's POST to Facebook Messenger
         if (!response.result.actionIncomplete && response.result.action === 'topic') {
             let topic = response.result.parameters['topic'];
             github.search.repos({
@@ -139,9 +138,6 @@ function sendMessage(event) {
                                         type: "web_url",
                                         url: repo.clone_url,
                                         title: 'View Project'
-                                    }, {
-                                        type: 'text',
-                                        title: repo.language
                                     }
                                 ]
                             })
