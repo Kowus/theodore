@@ -34,13 +34,16 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', (req, res) => {
     req.body.entry.forEach((entry) => {
-        console.log(JSON.stringify(entry));
+        // console.log(JSON.stringify(entry));
         entry.messaging.forEach((event) => {
             if (event.message && event.message.text) {
                 sendMessage(event);
             }
         });
     });
+    if(!req.body.result.actionIncomplete){
+console.log("Action Complete");
+    }
     res.status(200).end();
 });
 app.post('/ai', (req, res) => {
@@ -58,48 +61,13 @@ app.post('/ai', (req, res) => {
                     })
                 }
                 else {
-                    let messageData = {
-                        "facebook": {
-                            "attachment": {
-                                "type": "template",
-                                "payload": {
-                                    "template_type": "generic",
-                                    "elements": [
-                                        {
-                                            "title": "Pushup",
-                                            "subtitle": "Perform 40 pushups",
-                                            "image_url": "http://vignette4.wikia.nocookie.net/parkour/images/e/e0/Push_Up.jpg/revision/latest?cb=20141122161108",
-                                            "buttons": [
-                                                {
-                                                    "type": "web_url",
-                                                    "url": "http://www.bodybuilding.com/exercises/detail/view/name/pushups",
-                                                    "title": "Exercise Video"
-                                                }
-                                            ]
-                                        }, {
-                                            "title": "Benchpress",
-                                            "subtitle": "Perform 20 reps of benchpress",
-                                            "image_url": "http://www.bodybuilding.com/exercises/exerciseImages/sequences/360/Male/m/360_1.jpg",
-                                            "buttons": [
-                                                {
-                                                    "type": "web_url",
-                                                    "url": "http://www.bodybuilding.com/exercises/detail/view/name/pushups",
-                                                    "title": "Excercise Video"
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    };
+
                     let msg = `there are ${response.data.total_count} projects on ${topic}`;
                     console.log(msg);
                     return res.json({
                         speech: msg,
                         displayText: msg,
-                        source: 'github',
-                        data: messageData
+                        source: 'github'
                     });
                 }
             });
