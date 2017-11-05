@@ -63,6 +63,17 @@ app.post('/webhook', (req, res) => {
                                             topics: ${res.data.topics}
                                             `,
                                             image_url:res.data.owner.avatar_url
+                                        },
+                                        {
+                                            "title": res.data.language,
+                                            "subtitle": "See all our colors",
+                                            "default_action": {
+                                                "type": "web_url",
+                                                "url": "https://peterssendreceiveapp.ngrok.io/view?item=100",
+                                                "messenger_extensions": true,
+                                                "webview_height_ratio": "tall",
+                                                "fallback_url": "https://peterssendreceiveapp.ngrok.io/"
+                                            }
                                         }
                                     ],"buttons": [
                                         {
