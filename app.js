@@ -145,10 +145,7 @@ function sendMessage(event) {
                                     },{
                                         type:"postback",
                                         title:"Stats",
-                                        payload:{
-                                            repo_name: repo.name,
-                                            repo_owner: repo.owner.login
-                                        }
+                                        payload:`{repo_name: ${repo.name}, repo_owner: ${repo.owner.login}}`
                                     }
                                 ]
                             })
