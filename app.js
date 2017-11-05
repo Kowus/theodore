@@ -147,7 +147,7 @@ function sendMessage(event) {
                                         title:"Stats",
                                         payload:{
                                             repo_name: repo.name,
-                                            owner: repo.owner.login
+                                            repo_owner: repo.owner.login
                                         }
                                     }
                                 ]
