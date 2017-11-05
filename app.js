@@ -158,7 +158,6 @@ function sendMessage(event) {
                         method: 'POST',
                         json: {
                             recipient: {id: sender},
-                            sender_action:"typing_on",
                             message: {
                                 attachment: messageData
                             }
