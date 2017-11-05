@@ -116,6 +116,7 @@ function sendMessage(event) {
                         });
                     }
                     else {
+                        let total_count = Number(res.data.total_count)>0?`I found ${res.data.total_count} projects on ${topic}`:`Sorry, I could not find any projects on ${topic}`;
                         request({
                             url: 'https://graph.facebook.com/v2.6/me/messages',
                             qs: {access_token: token},
@@ -123,7 +124,7 @@ function sendMessage(event) {
                             json: {
                                 recipient: {id: sender},
                                 message: {
-                                    text: `I found ${res.data.total_count} projects on ${topic}`
+                                    text: total_count
                                 },
                             }
                         }, function (error, response, body) {
@@ -170,21 +171,7 @@ function sendMessage(event) {
                 }
             };*/
 
-            /*request({
-                url: 'https://graph.facebook.com/v2.6/me/messages',
-                qs: {access_token:token},
-                method: 'POST',
-                json: {
-                    recipient: {id:sender},
-                    message: messageData,
-                }
-            }, function(error, response, body) {
-                if (error) {
-                    console.log('Error sending messages: ', error)
-                } else if (response.body.error) {
-                    console.log('Error: ', response.body.error)
-                }
-            });*/
+
 
         else {
             let aiText = response.result.fulfillment.speech;
