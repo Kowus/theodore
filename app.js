@@ -145,7 +145,10 @@ function sendMessage(event) {
                                     },{
                                         type:"postback",
                                         title:"Stats",
-                                        payload:"Where is the addled cannibal?"
+                                        payload:{
+                                            repo_name: repo.name,
+                                            repo_owner: repo.owner.login
+                                        }
                                     }
                                 ]
                             })
