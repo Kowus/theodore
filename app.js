@@ -34,7 +34,6 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', (req, res) => {
     req.body.entry.forEach((entry) => {
-        // console.log(JSON.stringify(entry));
         entry.messaging.forEach((event) => {
             if (event.message && event.message.text) {
                 sendMessage(event);
@@ -60,7 +59,6 @@ app.post('/ai', (req, res) => {
                 else {
 
                     let msg = `there are ${response.data.total_count} projects on ${topic}`;
-                    console.log(msg);
                     return res.json({
                         speech: msg,
                         displayText: msg,
@@ -94,22 +92,75 @@ function sendMessage(event) {
 
     apiai.on('response', (response) => {
         // Got a response from api.ai. Let's POST to Facebook Messenger
-        let aiText = response.result.fulfillment.speech;
-        request({
-            url: 'https://graph.facebook.com/v2.6/me/messages',
-            qs: {access_token: token},
-            method: 'POST',
-            json: {
-                recipient: {id: sender},
-                message: {text: aiText}
-            }
-        }, function (error, response) {
-            if (error) {
-                console.error("Error sending message: ", error)
-            } else if (response.body.error) {
-                console.error('Error: ', response.body.error)
-            }
-        });
+        if(!response.result.actionIncomplete && response.result.action === 'topic'){
+            let messageData = {
+                "attachment":{
+                    "type":"template",
+                    "payload":{
+                        "template_type":"generic",
+                        "elements":[
+                            {
+                                "title": "Pushup",
+                                "subtitle": "Perform 40 pushups",
+                                "image_url":"http://vignette4.wikia.nocookie.net/parkour/images/e/e0/Push_Up.jpg/revision/latest?cb=20141122161108",
+                                "buttons":[
+                                    {
+                                        "type": "web_url",
+                                        "url":"http://www.bodybuilding.com/exercises/detail/view/name/pushups",
+                                        "title":"Exercise Video"
+                                    }
+                                ]
+                            },{
+                                "title": "Benchpress",
+                                "subtitle": "Perform 20 reps of benchpress",
+                                "image_url":"http://www.bodybuilding.com/exercises/exerciseImages/sequences/360/Male/m/360_1.jpg",
+                                "buttons":[
+                                    {
+                                        "type": "web_url",
+                                        "url": "http://www.bodybuilding.com/exercises/detail/view/name/pushups",
+                                        "title": "Excercise Video"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            };
+
+            request({
+                url: 'https://graph.facebook.com/v2.6/me/messages',
+                qs: {access_token:token},
+                method: 'POST',
+                json: {
+                    recipient: {id:sender},
+                    message: messageData,
+                }
+            }, function(error, response, body) {
+                if (error) {
+                    console.log('Error sending messages: ', error)
+                } else if (response.body.error) {
+                    console.log('Error: ', response.body.error)
+                }
+            });
+        }
+        else {
+            let aiText = response.result.fulfillment.speech;
+            request({
+                url: 'https://graph.facebook.com/v2.6/me/messages',
+                qs: {access_token: token},
+                method: 'POST',
+                json: {
+                    recipient: {id: sender},
+                    message: {text: aiText}
+                }
+            }, function (error, response) {
+                if (error) {
+                    console.error("Error sending message: ", error)
+                } else if (response.body.error) {
+                    console.error('Error: ', response.body.error)
+                }
+            });
+        }
     });
 
     apiai.on('error', (error) => {
