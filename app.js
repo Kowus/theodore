@@ -13,6 +13,10 @@ const express = require('express'),
         },
         rejectUnauthorized: false
     });
+    github.authenticate({
+        type:'token',
+        token: process.env.GITHUB_TOKEN
+    });
 
 
 app.set('port', (process.env.PORT || 3000));
