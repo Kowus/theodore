@@ -172,7 +172,11 @@ function sendMessage(event) {
                     sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
                 }
                 else {
+
                     let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic}` : `Sorry, I could not find any projects on ${topic}`;
+                    if(res.data.total_count === 1){
+                        total_count = `I found only ${res.data.total_count} project on ${topic}`
+                    }
                     if (res.data.total_count > 0) {
                         sendTextMessage(sender,total_count);
                         res.data.items.forEach((repo) => {
