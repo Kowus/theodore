@@ -71,7 +71,7 @@ app.post('/ai', (req, res) => {
         return res.status(400).json({
             status: {
                 code: 400,
-                errorType: `Bad topic: ${topic}`
+                errorType: "Sorry, an error occurred"
             }
         })
     }
