@@ -58,35 +58,37 @@ app.post('/ai', (req, res) => {
                 else {
                     let messageData = {
                         "facebook": {
-                            "attachment": {
-                                "type": "template",
-                                "payload": {
-                                    "template_type": "generic",
-                                    "elements": [
-                                        {
-                                            "title": "Pushup",
-                                            "subtitle": "Perform 40 pushups",
-                                            "image_url": "http://vignette4.wikia.nocookie.net/parkour/images/e/e0/Push_Up.jpg/revision/latest?cb=20141122161108",
-                                            "buttons": [
-                                                {
-                                                    "type": "web_url",
-                                                    "url": "http://www.bodybuilding.com/exercises/detail/view/name/pushups",
-                                                    "title": "Exercise Video"
-                                                }
-                                            ]
-                                        }, {
-                                            "title": "Benchpress",
-                                            "subtitle": "Perform 20 reps of benchpress",
-                                            "image_url": "http://www.bodybuilding.com/exercises/exerciseImages/sequences/360/Male/m/360_1.jpg",
-                                            "buttons": [
-                                                {
-                                                    "type": "web_url",
-                                                    "url": "http://www.bodybuilding.com/exercises/detail/view/name/pushups",
-                                                    "title": "Excercise Video"
-                                                }
-                                            ]
-                                        }
-                                    ]
+                            "message": {
+                                "attachment": {
+                                    "type": "template",
+                                    "payload": {
+                                        "template_type": "generic",
+                                        "elements": [
+                                            {
+                                                "title": "Pushup",
+                                                "subtitle": "Perform 40 pushups",
+                                                "image_url": "http://vignette4.wikia.nocookie.net/parkour/images/e/e0/Push_Up.jpg/revision/latest?cb=20141122161108",
+                                                "buttons": [
+                                                    {
+                                                        "type": "web_url",
+                                                        "url": "http://www.bodybuilding.com/exercises/detail/view/name/pushups",
+                                                        "title": "Exercise Video"
+                                                    }
+                                                ]
+                                            }, {
+                                                "title": "Benchpress",
+                                                "subtitle": "Perform 20 reps of benchpress",
+                                                "image_url": "http://www.bodybuilding.com/exercises/exerciseImages/sequences/360/Male/m/360_1.jpg",
+                                                "buttons": [
+                                                    {
+                                                        "type": "web_url",
+                                                        "url": "http://www.bodybuilding.com/exercises/detail/view/name/pushups",
+                                                        "title": "Excercise Video"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
                                 }
                             }
                         }
@@ -97,16 +99,7 @@ app.post('/ai', (req, res) => {
                         speech: msg,
                         displayText: msg,
                         source: 'github',
-                        "data": {
-                            "facebook": {
-                                "attachment": {
-                                    "type": "image",
-                                    "payload": {
-                                        "url": "https://www.pluris.fr/pj/6/6_16308_1473965154.jpg"
-                                    }
-                                }
-                            }
-                        }
+                        data:messageData
                     });
                 }
             });
