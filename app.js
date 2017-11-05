@@ -46,8 +46,8 @@ app.post('/ai', (req, res) => {
     if (req.body.result.action === 'topic') {
         let topic = req.body.result.parameters['topic'];
         github.search.repos(
-            {q:`topic:${topic}`},(err, response)=>{
-                if (err){
+            {q: `topic:${topic}`}, (err, response) => {
+                if (err) {
                     return res.status(400).json({
                         status: {
                             code: 400,
@@ -57,8 +57,7 @@ app.post('/ai', (req, res) => {
                 }
                 else {
                     let messageData = {
-                        "data": {
-                            "facebook": {
+                        "facebook": {
                             "attachment": {
                                 "type": "template",
                                 "payload": {
@@ -91,7 +90,6 @@ app.post('/ai', (req, res) => {
                                 }
                             }
                         }
-                    }
                     };
                     let msg = `there are ${response.data.total_count} projects on ${topic}`;
                     console.log(msg);
@@ -99,7 +97,7 @@ app.post('/ai', (req, res) => {
                         speech: msg,
                         displayText: msg,
                         source: 'github',
-                        messageData
+                        data: messageData
                     });
                 }
             });
