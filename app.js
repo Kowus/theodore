@@ -89,90 +89,83 @@ function sendMessage(event) {
     let apiai = apiaiApp.textRequest(text, {
         sessionId: 'tabby_cat' // use any arbitrary id
     });
+    let messageData = {
+            type: "template",
+            payload: {
+                template_type: "generic",
+                elements: []
+            }
+    };
 
     apiai.on('response', (response) => {
         // Got a response from api.ai. Let's POST to Facebook Messenger
-        if(!response.result.actionIncomplete && response.result.action === 'topic'){
+        if (!response.result.actionIncomplete && response.result.action === 'topic') {
             let topic = response.result.parameters['topic'];
-            github.search.repos(
-                {q: `topic:${topic}`}, (err, res) => {
-                    if(err){
-                        request({
-                            url: 'https://graph.facebook.com/v2.6/me/messages',
-                            qs: {access_token: token},
-                            method: 'POST',
-                            json: {
-                                recipient: {id: sender},
-                                message: {
-                                    text: `Sorry, I could not find any projects on ${topic}`
-                                },
-                            }
-                        }, function (error, response, body) {
-                            if (error) {
-                                console.log('Error sending messages: ', error)
-                            } else if (response.body.error) {
-                                console.log('Error: ', response.body.error)
-                            }
-                        });
-                    }
-                    else {
-                        let total_count = Number(res.data.total_count)>0?`I found ${res.data.total_count} projects on ${topic}`:`Sorry, I could not find any projects on ${topic}`;
-                        request({
-                            url: 'https://graph.facebook.com/v2.6/me/messages',
-                            qs: {access_token: token},
-                            method: 'POST',
-                            json: {
-                                recipient: {id: sender},
-                                message: {
-                                    text: total_count
-                                },
-                            }
-                        }, function (error, response, body) {
-                            if (error) {
-                                console.log('Error sending messages: ', error)
-                            } else if (response.body.error) {
-                                console.log('Error: ', response.body.error)
-                            }
-                        });
-                    }
-                });
-        }
-            /*let messageData = {
-                "attachment":{
-                    "type":"template",
-                    "payload":{
-                        "template_type":"generic",
-                        "elements":[
-                            {
-                                "title": "Pushup",
-                                "subtitle": "Perform 40 pushups",
-                                "image_url":"http://vignette4.wikia.nocookie.net/parkour/images/e/e0/Push_Up.jpg/revision/latest?cb=20141122161108",
-                                "buttons":[
-                                    {
-                                        "type": "web_url",
-                                        "url":"http://www.bodybuilding.com/exercises/detail/view/name/pushups",
-                                        "title":"Exercise Video"
-                                    }
-                                ]
-                            },{
-                                "title": "Benchpress",
-                                "subtitle": "Perform 20 reps of benchpress",
-                                "image_url":"http://www.bodybuilding.com/exercises/exerciseImages/sequences/360/Male/m/360_1.jpg",
-                                "buttons":[
-                                    {
-                                        "type": "web_url",
-                                        "url": "http://www.bodybuilding.com/exercises/detail/view/name/pushups",
-                                        "title": "Excercise Video"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
+            github.search.repos({
+                q: `topic:${topic}`,
+                per_page: 5,
+                page: 1
+
+            }, (err, res) => {
+                if (err) {
+                    request({
+                        url: 'https://graph.facebook.com/v2.6/me/messages',
+                        qs: {access_token: token},
+                        method: 'POST',
+                        json: {
+                            recipient: {id: sender},
+                            message: {
+                                text: `Sorry, I could not find any projects on ${topic}`
+                            },
+                        }
+                    }, function (error, response, body) {
+                        if (error) {
+                            console.log('Error sending messages: ', error)
+                        } else if (response.body.error) {
+                            console.log('Error: ', response.body.error)
+                        }
+                    });
                 }
-            };*/
+                else {
+                    let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic}` : `Sorry, I could not find any projects on ${topic}`;
+                    if (res.data.total_count > 0) {
+                        res.data.items.forEach((repo) => {
+                            messageData.attachment.payload.elements.push({
+                                title: repo.full_name,
+                                subtitle: repo.description,
+                                image_url: repo.owner.avatar_url,
+                                buttons: [
+                                    {
+                                        type: "web_url",
+                                        url: repo.clone_url,
+                                        title:'View Project'
+                                    }
+                                ]
+                            })
+                        });
+                    }
 
-
-
+                    request({
+                        url: 'https://graph.facebook.com/v2.6/me/messages',
+                        qs: {access_token: token},
+                        method: 'POST',
+                        json: {
+                            recipient: {id: sender},
+                            message: {
+                                text: total_count,
+                                attachment: messageData
+                            }
+                        }
+                    }, function (error, response, body) {
+                        if (error) {
+                            console.log('Error sending messages: ', error)
+                        } else if (response.body.error) {
+                            console.log('Error: ', response.body.error)
+                        }
+                    });
+                }
+            });
+        }
         else {
             let aiText = response.result.fulfillment.speech;
             request({
