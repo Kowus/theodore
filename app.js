@@ -97,7 +97,16 @@ app.post('/ai', (req, res) => {
                         speech: msg,
                         displayText: msg,
                         source: 'github',
-                        data: messageData
+                        "data": {
+                            "facebook": {
+                                "attachement": {
+                                    "type": "image",
+                                    "payload": {
+                                        "url": "https://www.pluris.fr/pj/6/6_16308_1473965154.jpg"
+                                    }
+                                }
+                            }
+                        }
                     });
                 }
             });
