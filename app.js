@@ -13,10 +13,10 @@ const express = require('express'),
         },
         rejectUnauthorized: false
     });
-    github.authenticate({
-        type:'token',
-        token: process.env.GITHUB_USER_TOKEN
-    });
+github.authenticate({
+    type: 'token',
+    token: process.env.GITHUB_USER_TOKEN
+});
 
 
 app.set('port', (process.env.PORT || 3000));
@@ -66,13 +66,13 @@ app.post('/webhook', (req, res) => {
                                             subtitle: `${res.data.description}
                                             topics: ${res.data.topics}
                                             `,
-                                            image_url:res.data.owner.avatar_url
+                                            image_url: res.data.owner.avatar_url
                                         },
                                         {
                                             "title": res.data.language,
-                                            "subtitle": "See all our colors",
+                                            "subtitle": "language",
                                         }
-                                    ],"buttons": [
+                                    ], "buttons": [
                                         {
                                             "title": "Go To",
                                             "type": "web_url",
@@ -170,25 +170,6 @@ function sendMessage(event) {
             }, (err, res) => {
                 if (err) {
                     sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
-                    /*
-                    request({
-                        url: 'https://graph.facebook.com/v2.6/me/messages',
-                        qs: {access_token: token},
-                        method: 'POST',
-                        json: {
-                            recipient: {id: sender},
-                            message: {
-                                text: `Sorry, I could not find any projects on ${topic}`
-                            },
-                        }
-                    }, function (error, response, body) {
-                        if (error) {
-                            console.log('Error sending messages: ', error)
-                        } else if (response.body.error) {
-                            console.log('Error: ', response.body.error)
-                        }
-                    });
-                    */
                 }
                 else {
                     let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic}` : `Sorry, I could not find any projects on ${topic}`;
@@ -211,25 +192,27 @@ function sendMessage(event) {
                                 ]
                             })
                         });
-                    }
-
-                    request({
-                        url: 'https://graph.facebook.com/v2.6/me/messages',
-                        qs: {access_token: token},
-                        method: 'POST',
-                        json: {
-                            recipient: {id: sender},
-                            message: {
-                                attachment: messageData
+                        request({
+                            url: 'https://graph.facebook.com/v2.6/me/messages',
+                            qs: {access_token: token},
+                            method: 'POST',
+                            json: {
+                                recipient: {id: sender},
+                                message: {
+                                    attachment: messageData
+                                }
                             }
-                        }
-                    }, function (error, response, body) {
-                        if (error) {
-                            console.log('Error sending messages: ', error)
-                        } else if (response.body.error) {
-                            console.log('Error: ', response.body.error)
-                        }
-                    });
+                        }, function (error, response, body) {
+                            if (error) {
+                                console.log('Error sending messages: ', error)
+                            } else if (response.body.error) {
+                                console.log('Error: ', response.body.error)
+                            }
+                        });
+                    }
+                    else{
+                        sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
+                    }
                 }
             });
         }
