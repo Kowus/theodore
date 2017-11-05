@@ -41,10 +41,10 @@ app.post('/webhook', (req, res) => {
             if (event.postback) {
                 // let text = JSON.stringify(event.postback)
                 // sendTextMessage(event.sender.id, 'Postback received: '+text.substring(0,200, token));
-                let pb = JSON.parse(event.postback);
+                let pb = JSON.parse(event.postback.payload);
                 github.repos.get({
-                    owner: pb.payload.repo_owner,
-                    repo: pb.payload.repo_name,
+                    owner: pb.repo_owner,
+                    repo: pb.repo_name,
                     path: ''
                 }, (err, res) => {
                     if (err) {
@@ -73,8 +73,7 @@ app.post('/webhook', (req, res) => {
                                     ]
                                 }
                             }
-                        }
-
+                        };
                         request({
                             url: 'https://graph.facebook.com/v2.6/me/messages',
                             qs: {access_token: token},
