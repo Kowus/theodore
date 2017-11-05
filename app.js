@@ -57,7 +57,7 @@ app.post('/ai', (req, res) => {
                     })
                 }
                 else {
-                    let msg = `there are ${response.total_count} projects on ${topic}`;
+                    let msg = `there are ${response.data.total_count} projects on ${topic}`;
                     console.log(msg);
                     return res.json({
                         speech: msg,
@@ -71,7 +71,7 @@ app.post('/ai', (req, res) => {
         return res.status(400).json({
             status: {
                 code: 400,
-                errorType: "Sorry, an error occurred"
+                errorType: "Sorry, an error occurred while getting your data"
             }
         })
     }
