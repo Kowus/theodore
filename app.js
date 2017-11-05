@@ -43,7 +43,7 @@ app.post('/webhook', (req, res) => {
     res.status(200).end();
 });
 app.post('/ai', (req, res) => {
-    console.log(req.body);
+    console.log("entry: ",req.body.entry);
     if (req.body.result.action === 'topic') {
         let topic = req.body.result.parameters['topic'];
         github.search.repos(
