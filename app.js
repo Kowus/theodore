@@ -15,7 +15,7 @@ const express = require('express'),
     });
     github.authenticate({
         type:'token',
-        token: process.env.GITHUB_TOKEN
+        token: process.env.GITHUB_USER_TOKEN
     });
 
 
