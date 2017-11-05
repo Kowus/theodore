@@ -92,10 +92,9 @@ app.post('/ai', (req, res) => {
                     let msg = `there are ${response.data.total_count} projects on ${topic}`;
                     console.log(msg);
                     return res.json({
-                        speech: msg,
+                        speech: messageData,
                         displayText: msg,
                         source: 'github',
-                        messages:[messageData]
                     });
                 }
             });
