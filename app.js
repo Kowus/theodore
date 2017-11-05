@@ -92,9 +92,10 @@ app.post('/ai', (req, res) => {
                     let msg = `there are ${response.data.total_count} projects on ${topic}`;
                     console.log(msg);
                     return res.json({
-                        speech: messageData,
+                        speech: msg,
                         displayText: msg,
                         source: 'github',
+                        messages:[messageData]
                     });
                 }
             });
@@ -124,6 +125,7 @@ function sendMessage(event) {
 
     apiai.on('response', (response) => {
         // Got a response from api.ai. Let's POST to Facebook Messenger
+        console.log(JSON.stringify(response));
         let aiText = response.result.fulfillment.speech;
         request({
             url: 'https://graph.facebook.com/v2.6/me/messages',
