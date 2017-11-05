@@ -133,7 +133,7 @@ function sendMessage(event) {
                     let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic}` : `Sorry, I could not find any projects on ${topic}`;
                     if (res.data.total_count > 0) {
                         res.data.items.forEach((repo) => {
-                            messageData.attachment.payload.elements.push({
+                            messageData.payload.elements.push({
                                 title: repo.full_name,
                                 subtitle: repo.description,
                                 image_url: repo.owner.avatar_url,
