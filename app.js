@@ -93,6 +93,49 @@ function sendMessage(event) {
     apiai.on('response', (response) => {
         // Got a response from api.ai. Let's POST to Facebook Messenger
         if(!response.result.actionIncomplete && response.result.action === 'topic'){
+            let topic = response.result.parameters['topic'];
+            github.search.repos(
+                {q: `topic:${topic}`}, (err, res) => {
+                    if(err){
+                        request({
+                            url: 'https://graph.facebook.com/v2.6/me/messages',
+                            qs: {access_token: token},
+                            method: 'POST',
+                            json: {
+                                recipient: {id: sender},
+                                message: {
+                                    text: `Sorry, I could not find any projects on ${topic}`
+                                },
+                            }
+                        }, function (error, response, body) {
+                            if (error) {
+                                console.log('Error sending messages: ', error)
+                            } else if (response.body.error) {
+                                console.log('Error: ', response.body.error)
+                            }
+                        });
+                    }
+                    else {
+                        request({
+                            url: 'https://graph.facebook.com/v2.6/me/messages',
+                            qs: {access_token: token},
+                            method: 'POST',
+                            json: {
+                                recipient: {id: sender},
+                                message: {
+                                    text: `I found ${res.data.total_count} projects on ${topic}`
+                                },
+                            }
+                        }, function (error, response, body) {
+                            if (error) {
+                                console.log('Error sending messages: ', error)
+                            } else if (response.body.error) {
+                                console.log('Error: ', response.body.error)
+                            }
+                        });
+                    }
+                });
+        }
             let messageData = {
                 "attachment":{
                     "type":"template",
@@ -127,7 +170,7 @@ function sendMessage(event) {
                 }
             };
 
-            request({
+            /*request({
                 url: 'https://graph.facebook.com/v2.6/me/messages',
                 qs: {access_token:token},
                 method: 'POST',
@@ -141,7 +184,7 @@ function sendMessage(event) {
                 } else if (response.body.error) {
                     console.log('Error: ', response.body.error)
                 }
-            });
+            });*/
         }
         else {
             let aiText = response.result.fulfillment.speech;
