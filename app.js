@@ -173,7 +173,7 @@ function sendMessage(event) {
                 }
                 else {
 
-                    let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic}` : `Sorry, I could not find any projects on ${topic}`;
+                    let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic} here's the first batch of 5.` : `Sorry, I could not find any projects on ${topic}`;
                     if(res.data.total_count === 1){
                         total_count = `I found only ${res.data.total_count} project on ${topic}`
                     }
