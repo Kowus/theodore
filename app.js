@@ -3,7 +3,16 @@ const express = require('express'),
     request = require('request'),
     app = express(),
     token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN,
-    apiaiApp = require('apiai')(process.env.APIAI_CLIENT_ACCESS_TOKEN);
+    apiaiApp = require('apiai')(process.env.APIAI_CLIENT_ACCESS_TOKEN),
+    GitHubApi = require('github'),
+    github = new GitHubApi({
+    debug: true,
+    headers: {
+        'accept': 'application/vnd.github.mercy-preview+json'
+    },
+    rejectUnauthorized: false
+});
+
 
 app.set('port', (process.env.PORT || 3000));
 app.use(bodyParser.urlencoded({extended: true}));
@@ -37,43 +46,24 @@ app.post('/ai', (req, res)=>{
    if(req.body.result.action === 'topic'){
        let topic = req.body.result.parameters['topic'];
        let restUrl = `https://api.github.com/search/repositories?q=${topic}+topic:${topic}&sort=updated`;
-       /*request.get(restUrl, (err, response, body)=>{
-           if(!err && response.statusCode ==200){
-               let json = body;
-               let msg = `there are ${body.total_count} projects on ${topic}`;
-               return res.json({
-                   speech:msg,
-                   displayText: msg,
-                   source: 'github'
-               });
-           }else{
-               return res.status(400).json({
-                   status: {
-                       code: 400,
-                       errorType: `I couldn't find ${topic} projects`
-                   }
-               })
-           }
-       })*/
-
        request({
            url: restUrl,
-           headers:{
+           headers: {
                'Accept': 'application/vnd.github.mercy-preview+json'
            },
-           method:'GET'
-       },(err, response, body)=>{
+           method: 'GET'
+       }, (err, response, body) => {
            console.log(`response status: ${response.statusCode}`);
-           if(!err && response.statusCode ==200){
+           if (!err && response.statusCode == 200) {
                let json = body;
                let msg = `there are ${body.total_count} projects on ${topic}`;
                console.log(msg);
                return res.json({
-                   speech:msg,
+                   speech: msg,
                    displayText: msg,
                    source: 'github'
                });
-           }else{
+           } else {
                return res.status(400).json({
                    status: {
                        code: 400,
