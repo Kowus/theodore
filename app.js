@@ -79,7 +79,7 @@ app.post('/webhook', (req, res) => {
                             qs: {access_token: token},
                             method: 'POST',
                             json: {
-                                recipient: {id: sender},
+                                recipient: {id: event.sender.id},
                                 message: messageData
                             }
                         }, function (error, response, body) {
