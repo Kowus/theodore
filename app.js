@@ -140,7 +140,7 @@ function sendMessage(event) {
                                         url: repo.clone_url,
                                         title: 'View Project'
                                     }, {
-                                        type: 'text'
+                                        type: 'text',
                                         title: repo.language
                                     }
                                 ]
