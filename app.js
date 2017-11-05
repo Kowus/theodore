@@ -99,7 +99,7 @@ app.post('/ai', (req, res) => {
                         source: 'github',
                         "data": {
                             "facebook": {
-                                "attachement": {
+                                "attachment": {
                                     "type": "image",
                                     "payload": {
                                         "url": "https://www.pluris.fr/pj/6/6_16308_1473965154.jpg"
