@@ -38,9 +38,60 @@ app.post('/webhook', (req, res) => {
             if (event.message && event.message.text) {
                 sendMessage(event);
             }
-            if(event.postback){
-                let text = JSON.stringify(event.postback)
-                sendTextMessage(event.sender.id, 'Postback received: '+text.substring(0,200, token));
+            if (event.postback) {
+                // let text = JSON.stringify(event.postback)
+                // sendTextMessage(event.sender.id, 'Postback received: '+text.substring(0,200, token));
+                let pb = JSON.parse(event.postback);
+                github.repos.get({
+                    owner: pb.payload.repo_owner,
+                    repo: pb.payload.repo_name,
+                    path: ''
+                }, (err, res) => {
+                    if (err) {
+                        sendTextMessage(event.sender.id, `Sorry, couldn't get you info on this repository. Please try again later`);
+                    }
+                    else {
+                        let messageData = {
+                            attachment: {
+                                type: 'template',
+                                payload: {
+                                    template_type: 'list',
+                                    elements: [
+                                        {
+                                            title: res.data.full_name,
+                                            subtitle: `${res.data.description}
+                                            topics: ${res.data.topics}
+                                            `,
+                                            image_url:res.data.owner.avatar_url
+                                        }
+                                    ],"buttons": [
+                                        {
+                                            "title": "Go To",
+                                            "type": "web_url",
+                                            "url": res.data.clone_url
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+
+                        request({
+                            url: 'https://graph.facebook.com/v2.6/me/messages',
+                            qs: {access_token: token},
+                            method: 'POST',
+                            json: {
+                                recipient: {id: sender},
+                                message: messageData
+                            }
+                        }, function (error, response, body) {
+                            if (error) {
+                                console.log('Error sending messages: ', error)
+                            } else if (response.body.error) {
+                                console.log('Error: ', response.body.error)
+                            }
+                        });
+                    }
+                })
             }
         });
     });
@@ -111,6 +162,8 @@ function sendMessage(event) {
 
             }, (err, res) => {
                 if (err) {
+                    sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
+                    /*
                     request({
                         url: 'https://graph.facebook.com/v2.6/me/messages',
                         qs: {access_token: token},
@@ -128,6 +181,7 @@ function sendMessage(event) {
                             console.log('Error: ', response.body.error)
                         }
                     });
+                    */
                 }
                 else {
                     let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic}` : `Sorry, I could not find any projects on ${topic}`;
@@ -142,10 +196,10 @@ function sendMessage(event) {
                                         type: "web_url",
                                         url: repo.clone_url,
                                         title: 'View Project'
-                                    },{
-                                        type:"postback",
-                                        title:"Stats",
-                                        payload:`{repo_name: ${repo.name}, repo_owner: ${repo.owner.login}}`
+                                    }, {
+                                        type: "postback",
+                                        title: "Stats",
+                                        payload: `{"repo_name": "${repo.name}", "repo_owner": "${repo.owner.login}"}`
                                     }
                                 ]
                             })
@@ -200,17 +254,17 @@ function sendMessage(event) {
 function sendTextMessage(sender, text) {
     let messageData = {text: text};
     request({
-        url:'https://graph.facebook.com/v2.6/me/messages',
-        qs:{access_token: token},
+        url: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: {access_token: token},
         method: 'POST',
-        json:{
-            recipient: {id:sender},
+        json: {
+            recipient: {id: sender},
             message: messageData
         }
     }, function (error, response, body) {
-        if(error){
+        if (error) {
             console.log('Error sending messages: ', error)
-        } else if(response.body.error){
+        } else if (response.body.error) {
             console.log('Error: ', response.body.error)
         }
     })
