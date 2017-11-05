@@ -34,6 +34,7 @@ app.get('/webhook', (req, res) => {
 
 app.post('/webhook', (req, res) => {
     req.body.entry.forEach((entry) => {
+        console.log(JSON.stringify(entry));
         entry.messaging.forEach((event) => {
             if (event.message && event.message.text) {
                 sendMessage(event);
@@ -43,7 +44,7 @@ app.post('/webhook', (req, res) => {
     res.status(200).end();
 });
 app.post('/ai', (req, res) => {
-    console.log("entry: ",req.body.entry);
+
     if (req.body.result.action === 'topic') {
         let topic = req.body.result.parameters['topic'];
         github.search.repos(
