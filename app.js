@@ -158,8 +158,8 @@ function sendMessage(event) {
                         method: 'POST',
                         json: {
                             recipient: {id: sender},
+                            sender_action:"typing_on",
                             message: {
-                                text: total_count,
                                 attachment: messageData
                             }
                         }
