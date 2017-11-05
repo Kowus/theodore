@@ -41,9 +41,6 @@ app.post('/webhook', (req, res) => {
             }
         });
     });
-    if(!req.body.result.actionIncomplete){
-console.log("Action Complete");
-    }
     res.status(200).end();
 });
 app.post('/ai', (req, res) => {
