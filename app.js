@@ -57,8 +57,6 @@ app.post('/ai', (req, res) => {
                 }
                 else {
                     let messageData = {
-                        "facebook": {
-                            "message": {
                                 "attachment": {
                                     "type": "template",
                                     "payload": {
@@ -90,8 +88,6 @@ app.post('/ai', (req, res) => {
                                         ]
                                     }
                                 }
-                            }
-                        }
                     };
                     let msg = `there are ${response.data.total_count} projects on ${topic}`;
                     console.log(msg);
@@ -99,7 +95,7 @@ app.post('/ai', (req, res) => {
                         speech: msg,
                         displayText: msg,
                         source: 'github',
-                        data:messageData
+                        messages:[messageData]
                     });
                 }
             });
