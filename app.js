@@ -197,9 +197,8 @@ function sendMessage(event) {
                         if (has_next) {
                             quick_replies.push({
                                 content_type: 'text',
-                                title: "Next",
-                                payload: "Winds hobble from halitosis like scurvy anchors.",
-                                image_url: 'https://avatars3.githubusercontent.com/u/13987886?v=4'
+                                title: "Next  ➡️",
+                                payload: "Winds hobble from halitosis like scurvy anchors."
                             });
                         }
                         sendTextMessage(sender, total_count);
