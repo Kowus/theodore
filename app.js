@@ -63,7 +63,7 @@ app.post('/webhook', (req, res) => {
                                         elements: [
                                             {
                                                 title: res.data.full_name,
-                                                subtitle: res.data.description,
+                                                subtitle: res.data.description || "No description available for this repository",
                                                 image_url: res.data.owner.avatar_url
                                             }, {
                                                 "title": '📢',
@@ -165,99 +165,17 @@ function sendMessage(event) {
     }];
 
     apiai.on('response', (response) => {
-        if (!response.result.actionIncomplete && response.result.action === 'topic') {
-            let topic = response.result.parameters['topic'];
-            let topic_query = `topic:${topic.split(' ').join('+topic:')}+topic:${topic.split(' ').join('-')}`;
-            github.search.repos({
-                q: topic_query,
-                per_page: 5,
-                page: 1
-            }, (err, res) => {
-                if (err) {
-                    sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
-                }
-                else {
+        if (!response.result.actionIncomplete && response.result.action === 'topic' || response.result.action === 'projecttopic.projecttopic-more') {
 
-                    let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic} here's the first batch of 5.` : `Sorry, I could not find any projects on ${topic}`;
-                    if (res.data.total_count === 1) {
-                        total_count = `I found only ${res.data.total_count} project on ${topic}`
-                    }
-                    if (res.data.total_count <= 5 && res.data.total_count > 1) {
-                        total_count = `I found only ${res.data.total_count} projects on ${topic}`
-                    }
+            getGithubInfo(sender,response, messageData, quick_replies)
 
-                    if (res.data.total_count > 0) {
-                        let has_next = res.data.total_count > 5;
-                        if (has_next) {
-                            quick_replies.push({
-                                content_type: 'text',
-                                title: "Next  ➡️",
-                                payload: "Next"
-                            });
-                        }
-                        sendTextMessage(sender, total_count);
-                        res.data.items.forEach((repo) => {
-                            messageData.payload.elements.push({
-                                title: repo.full_name,
-                                subtitle: repo.description,
-                                image_url: repo.owner.avatar_url,
-                                buttons: [
-                                    {
-                                        type: "web_url",
-                                        url: repo.clone_url,
-                                        title: 'View Project'
-                                    }, {
-                                        type: "postback",
-                                        title: "Stats",
-                                        payload: `{"repo_name": "${repo.name}", "repo_owner": "${repo.owner.login}"}`
-                                    }
-                                ]
-                            })
-                        });
-                        request({
-                            url: 'https://graph.facebook.com/v2.6/me/messages',
-                            qs: {access_token: token},
-                            method: 'POST',
-                            json: {
-                                recipient: {id: sender},
-                                message: {
-                                    attachment: messageData,
-                                    quick_replies: quick_replies
-                                }
-                            }
-                        }, function (error, response, body) {
-                            if (error) {
-                                console.log('Error sending messages: ', error)
-                            } else if (response.body.error) {
-                                console.log('Error: ', response.body.error)
-                            }
-                        });
-                    }
-                    else {
-                        sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
-                    }
-                }
-            });
-        } else if (response.result.action === 'projecttopic.projecttopic-next') {
+
+
+        } /*else if (response.result.action === 'projecttopic.projecttopic-more') {
             sendTextMessage(sender, 'received a next query')
-        }
+        }*/
         else {
             let aiText = response.result.fulfillment.speech;
-            /*request({
-                url: 'https://graph.facebook.com/v2.6/me/messages',
-                qs: {access_token: token},
-                method: 'POST',
-                json: {
-                    recipient: {id: sender},
-                    message: {text: aiText}
-                }
-            }, function (error, response) {
-                if (error) {
-                    console.error("Error sending message: ", error)
-                } else if (response.body.error) {
-                    console.error('Error: ', response.body.error)
-                }
-            });*/
             sendTextMessage(sender, aiText)
         }
     });
@@ -284,4 +202,82 @@ function sendTextMessage(sender, text) {
             console.log('Error: ', response.body.error)
         }
     })
+}
+
+function getGithubInfo(sender, response, messageData,quick_replies) {
+    let topic = response.result.parameters['topic'];
+    let per_page = response.result.parameters['per_page'] || 5;
+    let cur_page = response.result.parameters['cur_page'] || 0;
+    let topic_query = `topic:${topic.split(' ').join('+topic:')}+topic:${topic.split(' ').join('-')}`;
+
+    github.search.repos({
+        q: topic_query,
+        per_page: per_page,
+        page: cur_page + 1
+    }, (err, res) => {
+        if (err) {
+            sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
+        }
+        else {
+
+            let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic} here's the first batch of 5.` : `Sorry, I could not find any projects on ${topic}`;
+            if (res.data.total_count === 1) {
+                total_count = `I found only ${res.data.total_count} project on ${topic}`
+            }
+            if (res.data.total_count <= 5 && res.data.total_count > 1) {
+                total_count = `I found only ${res.data.total_count} projects on ${topic}`
+            }
+
+            if (res.data.total_count > 0) {
+                let has_next = res.data.total_count > per_page * (cur_page+1);
+                if (has_next) {
+                    quick_replies.push({
+                        content_type: 'text',
+                        title: "More️",
+                        payload: `More ${topic} topics after page ${cur_page+1}`
+                    });
+                }
+                sendTextMessage(sender, total_count);
+                res.data.items.forEach((repo) => {
+                    messageData.payload.elements.push({
+                        title: repo.full_name,
+                        subtitle: repo.description,
+                        image_url: repo.owner.avatar_url,
+                        buttons: [
+                            {
+                                type: "web_url",
+                                url: repo.clone_url,
+                                title: 'View Project'
+                            }, {
+                                type: "postback",
+                                title: "Stats",
+                                payload: `{"repo_name": "${repo.name}", "repo_owner": "${repo.owner.login}"}`
+                            }
+                        ]
+                    })
+                });
+                request({
+                    url: 'https://graph.facebook.com/v2.6/me/messages',
+                    qs: {access_token: token},
+                    method: 'POST',
+                    json: {
+                        recipient: {id: sender},
+                        message: {
+                            attachment: messageData,
+                            quick_replies: quick_replies
+                        }
+                    }
+                }, function (error, response, body) {
+                    if (error) {
+                        console.log('Error sending messages: ', error)
+                    } else if (response.body.error) {
+                        console.log('Error: ', response.body.error)
+                    }
+                });
+            }
+            else {
+                sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
+            }
+        }
+    });
 }
