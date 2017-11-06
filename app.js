@@ -233,7 +233,7 @@ function getGithubInfo(sender, response, messageData,quick_replies) {
                 if (has_next) {
                     quick_replies.push({
                         content_type: 'text',
-                        title: "More️",
+                        title: `More ${topic} topics after page ${cur_page+1}`,
                         payload: `More ${topic} topics after page ${cur_page+1}`
                     });
                 }
