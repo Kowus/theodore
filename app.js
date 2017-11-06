@@ -72,7 +72,7 @@ app.post('/webhook', (req, res) => {
                                                 "title": res.data.language,
                                                 "subtitle": "language",
                                             }, {
-                                                "title": `${res.data.stargazers_count} | ${res.data.forks_count} | ${res.data.open_issues_count}`,
+                                                "title": `🌟 ${res.data.stargazers_count} | ${res.data.forks_count} | ${res.data.open_issues_count}`,
                                                 "subtitle": "Stars | Forks | Issues",
                                             }
                                         ], "buttons": [
