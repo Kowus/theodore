@@ -113,11 +113,15 @@ app.post('/webhook', (req, res) => {
     });
     res.status(200).end();
 });
+
+// AI
+
 app.post('/ai', (req, res) => {
     if (req.body.result.action === 'topic') {
-        let topic = `topic:${req.body.result.parameters['topic'].split(' ').join('+topic:')}`;
+        let topic = req.body.result.parameters['topic'];
+            let topic_query=`topic:${topic.split(' ').join('+topic:')}`;
         github.search.repos(
-            {q: topic}, (err, response) => {
+            {q: topic_query}, (err, response) => {
                 if (err) {
                     return res.status(400).json({
                         status: {code: 400, errorType: `I couldn't find ${topic} projects`}
@@ -162,9 +166,10 @@ function sendMessage(event) {
 
     apiai.on('response', (response) => {
         if (!response.result.actionIncomplete && response.result.action === 'topic') {
-            let topic = `topic:${req.body.result.parameters['topic'].split(' ').join('+topic:')}`;
+            let topic =response.result.parameters['topic']
+                let topic_query=`topic:${topic.split(' ').join('+topic:')}`;
             github.search.repos({
-                q: topic,
+                q: topic_query,
                 per_page: 5,
                 page: 1
             }, (err, res) => {
