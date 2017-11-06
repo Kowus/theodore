@@ -167,7 +167,12 @@ function sendMessage(event) {
             elements: []
         }
     };
-    let quick_replies = [];
+    let quick_replies = [{
+        content_type: 'text',
+        title: "filter",
+        payload: "Winds hobble from halitosis like scurvy anchors.",
+        image_url: 'https://avatars3.githubusercontent.com/u/13987886?v=4'
+    }];
 
     apiai.on('response', (response) => {
         if (!response.result.actionIncomplete && response.result.action === 'topic') {
