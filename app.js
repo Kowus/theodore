@@ -198,7 +198,7 @@ function sendMessage(event) {
                             quick_replies.push({
                                 content_type: 'text',
                                 title: "Next  ➡️",
-                                payload: "Winds hobble from halitosis like scurvy anchors."
+                                payload: "Next"
                             });
                         }
                         sendTextMessage(sender, total_count);
