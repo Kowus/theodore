@@ -114,37 +114,23 @@ app.post('/webhook', (req, res) => {
     res.status(200).end();
 });
 app.post('/ai', (req, res) => {
-
     if (req.body.result.action === 'topic') {
-        let topic = req.body.result.parameters['topic'];
+        let topic = `topic:${req.body.result.parameters['topic'].split(' ').join('+topic:')}`;
         github.search.repos(
-            {q: `topic:${topic}`}, (err, response) => {
+            {q: topic}, (err, response) => {
                 if (err) {
                     return res.status(400).json({
-                        status: {
-                            code: 400,
-                            errorType: `I couldn't find ${topic} projects`
-                        }
+                        status: {code: 400, errorType: `I couldn't find ${topic} projects`}
                     })
                 }
                 else {
-
                     let msg = `there are ${response.data.total_count} projects on ${topic}`;
-                    return res.json({
-                        speech: msg,
-                        displayText: msg,
-                        source: 'github'
-                    });
+                    return res.json({speech: msg, displayText: msg, source: 'github'});
                 }
             });
 
     } else {
-        return res.status(400).json({
-            status: {
-                code: 400,
-                errorType: "Sorry, an error occurred while getting your data"
-            }
-        })
+        return res.status(400).json({status: {code: 400, errorType: "Sorry, an error occurred while getting your data"}})
     }
 });
 
@@ -176,9 +162,9 @@ function sendMessage(event) {
 
     apiai.on('response', (response) => {
         if (!response.result.actionIncomplete && response.result.action === 'topic') {
-            let topic = response.result.parameters['topic'];
+            let topic = `topic:${req.body.result.parameters['topic'].split(' ').join('+topic:')}`;
             github.search.repos({
-                q: `topic:${topic}`,
+                q: topic,
                 per_page: 5,
                 page: 1
             }, (err, res) => {
@@ -190,6 +176,8 @@ function sendMessage(event) {
                     let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic} here's the first batch of 5.` : `Sorry, I could not find any projects on ${topic}`;
                     if (res.data.total_count === 1) {
                         total_count = `I found only ${res.data.total_count} project on ${topic}`
+                    }if (res.data.total_count <= 5 && res.data.total_count > 1) {
+                        total_count = `I found only ${res.data.total_count} projects on ${topic}`
                     }
 
                     if (res.data.total_count > 0) {
@@ -249,7 +237,7 @@ function sendMessage(event) {
         }
         else {
             let aiText = response.result.fulfillment.speech;
-            request({
+            /*request({
                 url: 'https://graph.facebook.com/v2.6/me/messages',
                 qs: {access_token: token},
                 method: 'POST',
@@ -263,7 +251,8 @@ function sendMessage(event) {
                 } else if (response.body.error) {
                     console.error('Error: ', response.body.error)
                 }
-            });
+            });*/
+            sendTextMessage(sender, aiText)
         }
     });
     apiai.on('error', (error) => {
