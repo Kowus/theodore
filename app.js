@@ -63,14 +63,17 @@ app.post('/webhook', (req, res) => {
                                         elements: [
                                             {
                                                 title: res.data.full_name,
-                                                subtitle: `${res.data.description}
-                                            topics: ${res.data.topics}
-                                            `,
+                                                subtitle: res.data.description,
                                                 image_url: res.data.owner.avatar_url
-                                            },
-                                            {
+                                            }, {
+                                                "title": res.data.topics,
+                                                "subtitle": "topics",
+                                            }, {
                                                 "title": res.data.language,
                                                 "subtitle": "language",
+                                            }, {
+                                                "title": `${res.data.stargazers_count} | ${res.data.forks_count} | ${res.data.open_issues_count}`,
+                                                "subtitle": "Stars | Forks | Issues",
                                             }
                                         ], "buttons": [
                                             {
@@ -102,7 +105,7 @@ app.post('/webhook', (req, res) => {
                 }
                 else {
                     let text = JSON.stringify(event.postback);
-                    sendTextMessage(event.sender.id, 'Postback received: '+text.substring(0,200));
+                    sendTextMessage(event.sender.id, 'Postback received: ' + text.substring(0, 200));
                 }
             }
 
@@ -191,7 +194,7 @@ function sendMessage(event) {
                                 content_type: 'text',
                                 title: "Next",
                                 payload: "Winds hobble from halitosis like scurvy anchors.",
-                                image_url:'https://avatars3.githubusercontent.com/u/13987886?v=4'
+                                image_url: 'https://avatars3.githubusercontent.com/u/13987886?v=4'
                             });
                         }
                         sendTextMessage(sender, total_count);
