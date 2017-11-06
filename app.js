@@ -165,15 +165,15 @@ function sendMessage(event) {
     }];
 
     apiai.on('response', (response) => {
-        if (!response.result.actionIncomplete && response.result.action === 'topic' || response.result.action === 'projecttopic.projecttopic-more'|| response.result.action ==='more') {
+        if (!response.result.actionIncomplete && response.result.action === 'topic') {
 
-            getGithubInfo(sender,response, messageData, quick_replies)
+            getGithubInfo(sender, response, messageData, quick_replies)
 
 
+        } else if (response.result.action === 'projecttopic.projecttopic-more') {
 
-        } /*else if (response.result.action === 'projecttopic.projecttopic-more') {
-            sendTextMessage(sender, 'received a next query')
-        }*/
+            sendTextMessage(sender, `${response.result.resolvedQuery} ${response.result.action}`);
+        }
         else {
             let aiText = response.result.fulfillment.speech;
             sendTextMessage(sender, aiText)
@@ -204,7 +204,7 @@ function sendTextMessage(sender, text) {
     })
 }
 
-function getGithubInfo(sender, response, messageData,quick_replies) {
+function getGithubInfo(sender, response, messageData, quick_replies) {
     let topic = response.result.parameters['topic'];
     let per_page = response.result.parameters['per_page'] || 5;
     let cur_page = response.result.parameters['cur_page'] || 0;
@@ -229,12 +229,12 @@ function getGithubInfo(sender, response, messageData,quick_replies) {
             }
 
             if (res.data.total_count > 0) {
-                let has_next = res.data.total_count > per_page * (cur_page+1);
+                let has_next = res.data.total_count > per_page * (cur_page + 1);
                 if (has_next) {
                     quick_replies.push({
                         content_type: 'text',
-                        title: `More ${topic} topics after page ${cur_page+1}`,
-                        payload: `More ${topic} topics after page ${cur_page+1}`
+                        title: `More ${topic} topics after page ${cur_page + 1}`,
+                        payload: `More ${topic} topics after page ${cur_page + 1}`
                     });
                 }
                 sendTextMessage(sender, total_count);
