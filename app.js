@@ -66,7 +66,7 @@ app.post('/webhook', (req, res) => {
                                                 subtitle: res.data.description,
                                                 image_url: res.data.owner.avatar_url
                                             }, {
-                                                "title": String(res.data.topics.split(',').join(', ')),
+                                                "title": String(res.data.topics).split(',').join(', '),
                                                 "subtitle": "topics",
                                             }, {
                                                 "title": res.data.language,
