@@ -204,7 +204,23 @@ function sendMessage(event) {
                             json: {
                                 recipient: {id: sender},
                                 message: {
-                                    attachment: messageData
+                                    attachment: messageData,
+                                    quick_replies:[
+                                        {
+                                            "content_type":"text",
+                                            "title":"Search",
+                                            "payload":"<POSTBACK_PAYLOAD>",
+                                            "image_url":"http://example.com/img/red.png"
+                                        },
+                                        {
+                                            "content_type":"location"
+                                        },
+                                        {
+                                            "content_type":"text",
+                                            "title":"Something Else",
+                                            "payload":"<POSTBACK_PAYLOAD>"
+                                        }
+                                    ]
                                 }
                             }
                         }, function (error, response, body) {
