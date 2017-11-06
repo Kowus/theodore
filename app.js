@@ -43,63 +43,69 @@ app.post('/webhook', (req, res) => {
                 sendMessage(event);
             }
             if (event.postback) {
-                // let text = JSON.stringify(event.postback)
-                // sendTextMessage(event.sender.id, 'Postback received: '+text.substring(0,200, token));
-                let pb = JSON.parse(event.postback.payload);
-                github.repos.get({
-                    owner: pb.repo_owner,
-                    repo: pb.repo_name,
-                    path: ''
-                }, (err, res) => {
-                    if (err) {
-                        sendTextMessage(event.sender.id, `Sorry, couldn't get you info on this repository. Please try again later`);
-                    }
-                    else {
-                        let messageData = {
-                            attachment: {
-                                type: 'template',
-                                payload: {
-                                    template_type: 'list',
-                                    elements: [
-                                        {
-                                            title: res.data.full_name,
-                                            subtitle: `${res.data.description}
+
+                if (event.postback.title === 'Stat') {
+                    let pb = JSON.parse(event.postback.payload);
+                    github.repos.get({
+                        owner: pb.repo_owner,
+                        repo: pb.repo_name,
+                        path: ''
+                    }, (err, res) => {
+                        if (err) {
+                            sendTextMessage(event.sender.id, `Sorry, couldn't get you info on this repository. Please try again later`);
+                        }
+                        else {
+                            let messageData = {
+                                attachment: {
+                                    type: 'template',
+                                    payload: {
+                                        template_type: 'list',
+                                        elements: [
+                                            {
+                                                title: res.data.full_name,
+                                                subtitle: `${res.data.description}
                                             topics: ${res.data.topics}
                                             `,
-                                            image_url: res.data.owner.avatar_url
-                                        },
-                                        {
-                                            "title": res.data.language,
-                                            "subtitle": "language",
-                                        }
-                                    ], "buttons": [
-                                        {
-                                            "title": "Go To",
-                                            "type": "web_url",
-                                            "url": res.data.clone_url
-                                        }
-                                    ]
+                                                image_url: res.data.owner.avatar_url
+                                            },
+                                            {
+                                                "title": res.data.language,
+                                                "subtitle": "language",
+                                            }
+                                        ], "buttons": [
+                                            {
+                                                "title": "Go To",
+                                                "type": "web_url",
+                                                "url": res.data.clone_url
+                                            }
+                                        ]
+                                    }
                                 }
-                            }
-                        };
-                        request({
-                            url: 'https://graph.facebook.com/v2.6/me/messages',
-                            qs: {access_token: token},
-                            method: 'POST',
-                            json: {
-                                recipient: {id: event.sender.id},
-                                message: messageData
-                            }
-                        }, function (error, response, body) {
-                            if (error) {
-                                console.log('Error sending messages: ', error)
-                            } else if (response.body.error) {
-                                console.log('Error: ', response.body.error)
-                            }
-                        });
-                    }
-                })
+                            };
+                            request({
+                                url: 'https://graph.facebook.com/v2.6/me/messages',
+                                qs: {access_token: token},
+                                method: 'POST',
+                                json: {
+                                    recipient: {id: event.sender.id},
+                                    message: messageData
+                                }
+                            }, function (error, response, body) {
+                                if (error) {
+                                    console.log('Error sending messages: ', error)
+                                } else if (response.body.error) {
+                                    console.log('Error: ', response.body.error)
+                                }
+                            });
+                        }
+                    })
+                }
+                else {
+                    let text = JSON.stringify(event.postback)
+                    sendTextMessage(event.sender.id, 'Postback received: '+text.substring(0,200));
+                }
             }
+
         });
     });
     res.status(200).end();
@@ -158,6 +164,7 @@ function sendMessage(event) {
             elements: []
         }
     };
+    let quick_replies = [];
 
     apiai.on('response', (response) => {
         if (!response.result.actionIncomplete && response.result.action === 'topic') {
@@ -166,7 +173,6 @@ function sendMessage(event) {
                 q: `topic:${topic}`,
                 per_page: 5,
                 page: 1
-
             }, (err, res) => {
                 if (err) {
                     sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
@@ -174,11 +180,21 @@ function sendMessage(event) {
                 else {
 
                     let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic} here's the first batch of 5.` : `Sorry, I could not find any projects on ${topic}`;
-                    if(res.data.total_count === 1){
+                    if (res.data.total_count === 1) {
                         total_count = `I found only ${res.data.total_count} project on ${topic}`
                     }
+
                     if (res.data.total_count > 0) {
-                        sendTextMessage(sender,total_count);
+                        let has_next = res.data.total_count > 5;
+                        if (has_next) {
+                            quick_replies.push({
+                                content_type: 'text',
+                                title: "Next",
+                                payload: "Winds hobble from halitosis like scurvy anchors.",
+                                image_url:'https://avatars3.githubusercontent.com/u/13987886?v=4'
+                            });
+                        }
+                        sendTextMessage(sender, total_count);
                         res.data.items.forEach((repo) => {
                             messageData.payload.elements.push({
                                 title: repo.full_name,
@@ -205,22 +221,7 @@ function sendMessage(event) {
                                 recipient: {id: sender},
                                 message: {
                                     attachment: messageData,
-                                    quick_replies:[
-                                        {
-                                            "content_type":"text",
-                                            "title":"Search",
-                                            "payload":"<POSTBACK_PAYLOAD>",
-                                            "image_url":"http://example.com/img/red.png"
-                                        },
-                                        {
-                                            "content_type":"location"
-                                        },
-                                        {
-                                            "content_type":"text",
-                                            "title":"Something Else",
-                                            "payload":"<POSTBACK_PAYLOAD>"
-                                        }
-                                    ]
+                                    quick_replies: quick_replies
                                 }
                             }
                         }, function (error, response, body) {
@@ -231,7 +232,7 @@ function sendMessage(event) {
                             }
                         });
                     }
-                    else{
+                    else {
                         sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
                     }
                 }
