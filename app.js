@@ -44,7 +44,7 @@ app.post('/webhook', (req, res) => {
             }
             if (event.postback) {
 
-                if (event.postback.title === 'Stat') {
+                if (event.postback.title === 'Stats') {
                     let pb = JSON.parse(event.postback.payload);
                     github.repos.get({
                         owner: pb.repo_owner,
@@ -101,7 +101,7 @@ app.post('/webhook', (req, res) => {
                     })
                 }
                 else {
-                    let text = JSON.stringify(event.postback)
+                    let text = JSON.stringify(event.postback);
                     sendTextMessage(event.sender.id, 'Postback received: '+text.substring(0,200));
                 }
             }
