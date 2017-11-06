@@ -165,7 +165,7 @@ function sendMessage(event) {
     }];
 
     apiai.on('response', (response) => {
-        if (!response.result.actionIncomplete && response.result.action === 'topic' || response.result.action === 'projecttopic.projecttopic-more') {
+        if (!response.result.actionIncomplete && response.result.action === 'topic' || response.result.action === 'projecttopic.projecttopic-more'|| response.result.action ==='more') {
 
             getGithubInfo(sender,response, messageData, quick_replies)
 
