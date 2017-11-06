@@ -69,7 +69,7 @@ app.post('/webhook', (req, res) => {
                                                 "title": '📢',
                                                 "subtitle": String(res.data.topics).split(',').join(', '),
                                             }, {
-                                                "title": res.data.language,
+                                                "title": res.data.language || 'No Language specified',
                                                 "subtitle": "language",
                                             }, {
                                                 "title": `🌟    |    ⑂    |    🙊`,
@@ -119,7 +119,7 @@ app.post('/webhook', (req, res) => {
 app.post('/ai', (req, res) => {
     if (req.body.result.action === 'topic') {
         let topic = req.body.result.parameters['topic'];
-            let topic_query=`topic:${topic.split(' ').join('+topic:')}`;
+        let topic_query = `topic:${topic.split(' ').join('+topic:')}`;
         github.search.repos(
             {q: topic_query}, (err, response) => {
                 if (err) {
@@ -166,8 +166,8 @@ function sendMessage(event) {
 
     apiai.on('response', (response) => {
         if (!response.result.actionIncomplete && response.result.action === 'topic') {
-            let topic =response.result.parameters['topic']
-                let topic_query=`topic:${topic.split(' ').join('+topic:')}`;
+            let topic = response.result.parameters['topic'];
+            let topic_query = `topic:${topic.split(' ').join('+topic:')}+topic:${topic.split(' ').join('-')}`;
             github.search.repos({
                 q: topic_query,
                 per_page: 5,
@@ -181,7 +181,8 @@ function sendMessage(event) {
                     let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic} here's the first batch of 5.` : `Sorry, I could not find any projects on ${topic}`;
                     if (res.data.total_count === 1) {
                         total_count = `I found only ${res.data.total_count} project on ${topic}`
-                    }if (res.data.total_count <= 5 && res.data.total_count > 1) {
+                    }
+                    if (res.data.total_count <= 5 && res.data.total_count > 1) {
                         total_count = `I found only ${res.data.total_count} projects on ${topic}`
                     }
 
@@ -237,7 +238,7 @@ function sendMessage(event) {
                     }
                 }
             });
-        }else if(response.result.action ==='projecttopic.projecttopic-next'){
+        } else if (response.result.action === 'projecttopic.projecttopic-next') {
             sendTextMessage(sender, 'received a next query')
         }
         else {
