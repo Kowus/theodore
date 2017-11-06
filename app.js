@@ -244,6 +244,8 @@ function sendMessage(event) {
                     }
                 }
             });
+        }else if(response.result.action ==='projecttopic.projecttopic-next'){
+            sendTextMessage(sender, 'received a next query')
         }
         else {
             let aiText = response.result.fulfillment.speech;
