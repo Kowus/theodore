@@ -154,17 +154,7 @@ function sendMessage(event) {
         type: "template",
         payload: {
             template_type: "generic",
-            elements: [], "buttons": [
-            {
-                "title": "Go To",
-                "type": "web_url",
-                "url": "github.com"
-            },{
-                    type: "postback",
-                    title: "Stats",
-                    payload: "Hello"
-                }
-        ]
+            elements: []
         }
     };
     let quick_replies = [{
