@@ -42,6 +42,9 @@ app.post('/webhook', (req, res) => {
             if (event.message && event.message.text) {
                 sendMessage(event);
             }
+            if(event.message.quick_reply){
+                sendTextMessage(event.sender.id, event.message.quick_reply.payload)
+            }
             if (event.postback) {
 
                 if (event.postback.title === 'Stats') {
