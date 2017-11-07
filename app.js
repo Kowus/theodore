@@ -150,7 +150,11 @@ const server = app.listen(app.get('port'), () => {
 function sendMessage(event) {
     let sender = event.sender.id;
     // prioritize quick replies
-    let text = event.message.quick_reply.payload || event.message.text;
+    let text = event.message.text;
+    if (event.message.quick_reply){
+        text = event.message.quick_reply.payload
+    }
+
     let apiai = apiaiApp.textRequest(text, {
         sessionId: 'tabby_cat'
     });
