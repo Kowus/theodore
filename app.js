@@ -185,13 +185,10 @@ function sendMessage(event) {
 
     apiai.on('response', (response) => {
         if (!response.result.actionIncomplete && response.result.action === 'topic') {
-
-            getGithubInfo(sender, response, messageData, quick_replies)
-
-
+            getGithubInfo(sender, response, messageData, quick_replies);
         } else if (response.result.action === 'projecttopic.projecttopic-more') {
-
-            sendTextMessage(sender, `${response.result.resolvedQuery} ${response.result.action}`);
+            sendTextMessage(sender, `${response.result.parameters['per_page']} ${response.result.parameters['cur_page']}`);
+            getGithubInfo(sender, response, messageData, quick_replies);
         }
         else {
             let aiText = response.result.fulfillment.speech;
