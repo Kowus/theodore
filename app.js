@@ -187,7 +187,7 @@ function sendMessage(event) {
         if (!response.result.actionIncomplete && response.result.action === 'topic') {
             getGithubInfo(sender, response, messageData, quick_replies);
         } else if (response.result.action === 'projecttopic.projecttopic-more') {
-            sendTextMessage(sender, `${response.result.parameters['per_page']} ${response.result.parameters['cur_page']}`);
+            sendTextMessage(sender, `${Number(response.result.parameters['cur_page'])+1}`);
             getGithubInfo(sender, response, messageData, quick_replies);
         }
         else {
@@ -223,7 +223,7 @@ function sendTextMessage(sender, text) {
 function getGithubInfo(sender, response, messageData, quick_replies) {
     let topic = response.result.parameters['topic'];
     let per_page = response.result.parameters['per_page'] || 5;
-    let cur_page = response.result.parameters['cur_page'] || 0;
+    let cur_page = Number(response.result.parameters['cur_page']) || 0;
     let topic_query = `topic:${topic.split(' ').join('+topic:')}+topic:${topic.split(' ').join('-')}`;
 
     github.search.repos({
