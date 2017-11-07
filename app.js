@@ -39,12 +39,26 @@ app.get('/webhook', (req, res) => {
 app.post('/webhook', (req, res) => {
     req.body.entry.forEach((entry) => {
         entry.messaging.forEach((event) => {
-            if (event.message && event.message.text) {
+            if (event.message && event.message.quick_reply) {
+                let customData = {
+                    "sender": {
+                        "id": event.sender.id
+                    },
+                    "recipient": {
+                        "id": event.recipient.id
+                    },
+                    "timestamp": event.timestamp,
+                    "mid": event.message.mid,
+                    "seq": event.message.seq,
+                    "text": event.message.quick_reply.payload
+                };
+                sendMessage(customData);
+                // sendTextMessage(event.sender.id, event.message.quick_reply.payload)
+            }
+            else if (event.message && event.message.text) {
                 sendMessage(event);
             }
-            if(event.message.quick_reply){
-                sendTextMessage(event.sender.id, event.message.quick_reply.payload)
-            }
+
             if (event.postback) {
 
                 if (event.postback.title === 'Stats') {
@@ -149,12 +163,7 @@ const server = app.listen(app.get('port'), () => {
 
 function sendMessage(event) {
     let sender = event.sender.id;
-    // prioritize quick replies
     let text = event.message.text;
-    if (event.message.quick_reply){
-        text = event.message.quick_reply.payload
-    }
-
     let apiai = apiaiApp.textRequest(text, {
         sessionId: 'tabby_cat'
     });
