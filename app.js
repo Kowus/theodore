@@ -39,7 +39,7 @@ app.get('/webhook', (req, res) => {
 app.post('/webhook', (req, res) => {
     req.body.entry.forEach((entry) => {
         entry.messaging.forEach((event) => {
-            if (event.message && event.message.quick_reply) {
+            if(event.message && event.message.quick_reply){
                 let customData = {
                     "sender": {
                         "id": event.sender.id
@@ -48,12 +48,14 @@ app.post('/webhook', (req, res) => {
                         "id": event.recipient.id
                     },
                     "timestamp": event.timestamp,
-                    "mid": event.message.mid,
-                    "seq": event.message.seq,
-                    "text": event.message.quick_reply.payload
+                    "message": {
+                        "mid": event.message.mid,
+                        "seq": event.message.seq,
+                        "text": event.message.quick_reply.payload
+                    }
                 };
-                sendMessage(customData);
                 // sendTextMessage(event.sender.id, event.message.quick_reply.payload)
+                sendMessage(customData);
             }
             else if (event.message && event.message.text) {
                 sendMessage(event);
