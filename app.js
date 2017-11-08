@@ -187,7 +187,7 @@ function sendMessage(event) {
         if (!response.result.actionIncomplete && response.result.action === 'topic') {
             getGithubInfo(sender, response, messageData, quick_replies);
         } else if (response.result.action === 'projecttopic.projecttopic-more') {
-            sendTextMessage(sender, `${Number(response.result.parameters['cur_page'])+1}`);
+            // sendTextMessage(sender, `${Number(response.result.parameters['cur_page'])+1}`);
             getGithubInfo(sender, response, messageData, quick_replies);
         }
         else {
@@ -222,7 +222,7 @@ function sendTextMessage(sender, text) {
 
 function getGithubInfo(sender, response, messageData, quick_replies) {
     let topic = response.result.parameters['topic'];
-    let per_page = response.result.parameters['per_page'] || 5;
+    let per_page = Number(response.result.parameters['per_page']) || 5;
     let cur_page = Number(response.result.parameters['cur_page']) || 0;
     let topic_query = `topic:${topic.split(' ').join('+topic:')}+topic:${topic.split(' ').join('-')}`;
 
@@ -236,7 +236,7 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
         }
         else {
 
-            let total_count = Number(res.data.total_count) > 0 ? `I found ${res.data.total_count} projects on ${topic} here's the first batch of 5.` : `Sorry, I could not find any projects on ${topic}`;
+            let total_count = Number(res.data.total_count) > 0 ? `There are ${res.data.total_count} projects on ${topic} currently viewing ${per_page * (cur_page +1)}.` : `Sorry, I could not find any projects on ${topic}`;
             if (res.data.total_count === 1) {
                 total_count = `I found only ${res.data.total_count} project on ${topic}`
             }
