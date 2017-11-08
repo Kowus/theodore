@@ -39,7 +39,7 @@ app.get('/webhook', (req, res) => {
 app.post('/webhook', (req, res) => {
     req.body.entry.forEach((entry) => {
         entry.messaging.forEach((event) => {
-            if(event.message && event.message.quick_reply){
+            if (event.message && event.message.quick_reply) {
                 let customData = {
                     "sender": {
                         "id": event.sender.id
@@ -222,7 +222,7 @@ function sendTextMessage(sender, text) {
 
 function getGithubInfo(sender, response, messageData, quick_replies) {
     let topic = response.result.parameters['topic'];
-    let per_page = Number(response.result.parameters['per_page']) || 5;
+    let per_page = Number(response.result.parameters['per_page']) || 10;
     let cur_page = Number(response.result.parameters['cur_page']) || 0;
     let topic_query = `topic:${topic.split(' ').join('+topic:')}+topic:${topic.split(' ').join('-')}`;
 
@@ -235,8 +235,9 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
             sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
         }
         else {
-
-            let total_count = Number(res.data.total_count) > 0 ? `There are ${res.data.total_count} projects on ${topic} currently viewing ${per_page * (cur_page +1)}.` : `Sorry, I could not find any projects on ${topic}`;
+            let quick_math = per_page * (cur_page + 1);
+            if (quick_math > res.data.total_count) quick_math = res.data.total_count;
+            let total_count = Number(res.data.total_count) > 0 ? `There are ${res.data.total_count} projects on ${topic} currently viewing ${quick_math}.` : `Sorry, I could not find any projects on ${topic}`;
             if (res.data.total_count === 1) {
                 total_count = `I found only ${res.data.total_count} project on ${topic}`
             }
