@@ -221,8 +221,8 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
     let per_page = Number(response.result.parameters['per_page']) || 10;
     let cur_page = Number(response.result.parameters['cur_page']) || 0;
     let topic_query = `topic:${topic.split(' ').join('+topic:')}+topic:${topic.split(' ').join('-')}`;
-    if (language && language!=='any'){
-        topic_query+=`language:${language}`
+    if (language && language !== 'any') {
+        topic_query += `+language:${language}`
     }
 
     github.search.repos({
@@ -238,7 +238,7 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
             if (quick_math > res.data.total_count) quick_math = res.data.total_count;
             let total_count = Number(res.data.total_count) > 0 ? `There are ${res.data.total_count} ${language || ''} projects on ${topic} currently viewing ${quick_math}.` : `Sorry, I could not find any ${language || ''} projects on ${topic}`;
             if (res.data.total_count === 1) {
-                total_count = `I found only ${res.data.total_count} ${language || ''}project on ${topic}`
+                total_count = `I found only ${res.data.total_count} ${language || ''} project on ${topic}`
             }
             if (res.data.total_count <= 5 && res.data.total_count > 1) {
                 total_count = `I found only ${res.data.total_count} ${language || ''} projects on ${topic}`
@@ -272,16 +272,19 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
                         ]
                     })
                 });
+                let cus_message = {
+                    attachment: messageData
+                };
+                if (res.data.total_count > 10){
+                    cus_message.quick_replies= quick_replies
+                }
                 request({
                     url: 'https://graph.facebook.com/v2.6/me/messages',
                     qs: {access_token: token},
                     method: 'POST',
                     json: {
                         recipient: {id: sender},
-                        message: {
-                            attachment: messageData,
-                            quick_replies: quick_replies
-                        }
+                        message:cus_message
                     }
                 }, function (error, response, body) {
                     if (error) {
