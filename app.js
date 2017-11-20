@@ -221,8 +221,8 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
     let per_page = Number(response.result.parameters['per_page']) || 10;
     let cur_page = Number(response.result.parameters['cur_page']) || 0;
     let topic_query = `topic:${topic.split(' ').join('+topic:')}+topic:${topic.split(' ').join('-')}`;
-    if (language && language!=='any'){
-        topic_query+=`+language:${language}`
+    if (language && language !== 'any') {
+        topic_query += `+language:${language}`
     }
 
     github.search.repos({
@@ -250,7 +250,7 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
                     quick_replies.push({
                         content_type: 'text',
                         title: `More`,
-                        payload: `More ${topic} topics after page ${cur_page + 1}`
+                        payload: `More ${language +',' || ''} ${topic} topics after page ${cur_page + 1}`
                     });
                 }
                 sendTextMessage(sender, total_count);
@@ -272,16 +272,19 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
                         ]
                     })
                 });
+                let cus_message = {
+                    attachment: messageData
+                };
+                if (res.data.total_count > 10){
+                    cus_message.quick_replies= quick_replies
+                }
                 request({
                     url: 'https://graph.facebook.com/v2.6/me/messages',
                     qs: {access_token: token},
                     method: 'POST',
                     json: {
                         recipient: {id: sender},
-                        message: {
-                            attachment: messageData,
-                            quick_replies: quick_replies
-                        }
+                        message:cus_message
                     }
                 }, function (error, response, body) {
                     if (error) {
