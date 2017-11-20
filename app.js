@@ -250,7 +250,7 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
                     quick_replies.push({
                         content_type: 'text',
                         title: `More`,
-                        payload: `More ${topic} topics after page ${cur_page + 1}`
+                        payload: `More ${language+", "||''}${topic} topics after page ${cur_page + 1}`
                     });
                 }
                 sendTextMessage(sender, total_count);
