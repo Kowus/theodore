@@ -176,12 +176,7 @@ function sendMessage(event) {
             elements: []
         }
     };
-    let quick_replies = [{
-        content_type: 'text',
-        title: "filter",
-        payload: "Winds hobble from halitosis like scurvy anchors.",
-        image_url: 'https://avatars3.githubusercontent.com/u/13987886?v=4'
-    }];
+    let quick_replies = [];
 
     apiai.on('response', (response) => {
         if (!response.result.actionIncomplete && response.result.action === 'topic') {
@@ -222,9 +217,13 @@ function sendTextMessage(sender, text) {
 
 function getGithubInfo(sender, response, messageData, quick_replies) {
     let topic = response.result.parameters['topic'];
+    let language = response.result.parameters['language'];
     let per_page = Number(response.result.parameters['per_page']) || 10;
     let cur_page = Number(response.result.parameters['cur_page']) || 0;
     let topic_query = `topic:${topic.split(' ').join('+topic:')}+topic:${topic.split(' ').join('-')}`;
+    if (language && language!=='any'){
+        topic_query+=`language:${language}`
+    }
 
     github.search.repos({
         q: topic_query,
@@ -232,17 +231,17 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
         page: cur_page + 1
     }, (err, res) => {
         if (err) {
-            sendTextMessage(sender, `Sorry, I could not find any projects on ${topic}`);
+            sendTextMessage(sender, `Sorry, I could not find any ${language || ''} projects on ${topic}`);
         }
         else {
             let quick_math = per_page * (cur_page + 1);
             if (quick_math > res.data.total_count) quick_math = res.data.total_count;
-            let total_count = Number(res.data.total_count) > 0 ? `There are ${res.data.total_count} projects on ${topic} currently viewing ${quick_math}.` : `Sorry, I could not find any projects on ${topic}`;
+            let total_count = Number(res.data.total_count) > 0 ? `There are ${res.data.total_count} ${language || ''} projects on ${topic} currently viewing ${quick_math}.` : `Sorry, I could not find any ${language || ''} projects on ${topic}`;
             if (res.data.total_count === 1) {
-                total_count = `I found only ${res.data.total_count} project on ${topic}`
+                total_count = `I found only ${res.data.total_count} ${language || ''}project on ${topic}`
             }
             if (res.data.total_count <= 5 && res.data.total_count > 1) {
-                total_count = `I found only ${res.data.total_count} projects on ${topic}`
+                total_count = `I found only ${res.data.total_count} ${language || ''} projects on ${topic}`
             }
 
             if (res.data.total_count > 0) {
