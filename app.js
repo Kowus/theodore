@@ -222,7 +222,7 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
     let cur_page = Number(response.result.parameters['cur_page']) || 0;
     let topic_query = `topic:${topic.split(' ').join('+topic:')}+topic:${topic.split(' ').join('-')}`;
     if (language && language!=='any'){
-        topic_query+=`language:${language}`
+        topic_query+=`+language:${language}`
     }
 
     github.search.repos({
