@@ -238,7 +238,7 @@ function getGithubInfo(sender, response, messageData, quick_replies) {
             if (quick_math > res.data.total_count) quick_math = res.data.total_count;
             let total_count = Number(res.data.total_count) > 0 ? `There are ${res.data.total_count} ${language || ''} projects on ${topic} currently viewing ${quick_math}.` : `Sorry, I could not find any ${language || ''} projects on ${topic}`;
             if (res.data.total_count === 1) {
-                total_count = `I found only ${res.data.total_count} ${language || ''}project on ${topic}`
+                total_count = `I found only ${res.data.total_count} ${language || ''} project on ${topic}`
             }
             if (res.data.total_count <= 5 && res.data.total_count > 1) {
                 total_count = `I found only ${res.data.total_count} ${language || ''} projects on ${topic}`
